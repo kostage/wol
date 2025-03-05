@@ -12,9 +12,15 @@ RUN apk add --no-cache \
     iputils \
     jq \
     sudo \
-    shadow && \
+    shadow \
+    bats \
+    curl && \
     mkdir -p /var/www/localhost/htdocs /var/www/cgi-bin /var/www/mock /var/log/lighttpd && \
     chown -R appuser:appuser /var/www /var/log/lighttpd
+
+# Copy test files
+COPY test /test
+RUN chmod +x /test/unit/*.bats /test/integration/*.bats
 
 # Create directory structure
 RUN mkdir -p /var/www/cgi-bin /var/www/mock
