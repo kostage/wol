@@ -3,5 +3,10 @@
     "ip_address": "192.168.1.100",
     "retry_interval": 30,
     "max_retries": 5,
-    "use_mock": true
+    "use_mock": true,
+    "network_interface": "eth0",
+    "ping_timeout": 1,
+    "wol_retry_delay": 30,
+    "status_check_interval": 5,
+    "enable_auto_retry": true
 }
