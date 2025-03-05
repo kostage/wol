@@ -20,7 +20,8 @@ RUN apk add --no-cache \
 
 # Copy test files
 COPY test /test
-RUN chmod +x /test/unit/*.bats /test/integration/*.bats
+COPY test/unit/test_helper.bash /test/
+RUN chmod +x /test/unit/*.bats /test/integration/*.bats /test/test_helper.bash
 
 # Create directory structure
 RUN mkdir -p /var/www/cgi-bin /var/www/mock
