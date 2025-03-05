@@ -10,13 +10,18 @@ else
     PING="/bin/ping"
 fi
 
+# Initialize state if not exists
+if [ ! -f /var/www/state.json ]; then
+    echo '{"desired_state":"off","last_wake_attempt":null,"retry_count":0}' > /var/www/state.json
+fi
+
 # Read config and state
 CONFIG=$(cat /var/www/config.json)
 STATE=$(cat /var/www/state.json)
-IP=$(echo "$CONFIG" | grep -oP '"ip_address":\s*"\K[^"]+')
-DESIRED_STATE=$(echo "$STATE" | grep -oP '"desired_state":\s*"\K[^"]+')
-RETRY_COUNT=$(echo "$STATE" | grep -oP '"retry_count":\s*\K[0-9]+')
-LAST_ATTEMPT=$(echo "$STATE" | grep -oP '"last_wake_attempt":\s*\K[0-9]+')
+IP=$(echo "$CONFIG" | jq -r '.ip_address')
+DESIRED_STATE=$(echo "$STATE" | jq -r '.desired_state')
+RETRY_COUNT=$(echo "$STATE" | jq -r '.retry_count')
+LAST_ATTEMPT=$(echo "$STATE" | jq -r '.last_wake_attempt')
 
 # Check current status
 if $PING -c 1 -W 1 "$IP" >/dev/null 2>&1; then

@@ -14,7 +14,8 @@ RUN apk add --no-cache \
     sudo \
     shadow \
     bats \
-    curl && \
+    curl \
+    bash && \
     mkdir -p /var/www/localhost/htdocs /var/www/cgi-bin /var/www/mock /var/log/lighttpd && \
     chown -R appuser:appuser /var/www /var/log/lighttpd
 
