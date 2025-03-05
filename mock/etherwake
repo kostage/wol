@@ -1,0 +1,15 @@
+#!/bin/sh
+# Mock etherwake implementation
+echo "Mock etherwake called with arguments: $@" >> /var/www/mock/mock.log
+
+# Read mock config
+CONFIG=$(cat /var/www/mock_config.json)
+MOCK_RESULT=$(echo "$CONFIG" | jq -r '.mock_etherwake_result')
+
+if [ "$MOCK_RESULT" = "success" ]; then
+    echo "Mock: WoL packet sent successfully"
+    exit 0
+else
+    echo "Mock: Failed to send WoL packet" >&2
+    exit 1
+fi

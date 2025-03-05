@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NAS Control</title>
+    <style>
+        .status-led {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin: 10px;
+        }
+        .online { background-color: #0f0; }
+        .offline { background-color: #f00; }
+        button { padding: 10px 20px; }
+    </style>
+</head>
+<body>
+    <h1>NAS Control</h1>
+    
+    <div>
+        Status: 
+        <div id="status" class="status-led offline"></div>
+    </div>
+    
+    <button onclick="wakeNAS()">Wake NAS</button>
+
+    <script>
+        async function updateStatus() {
+            try {
+                const response = await fetch('/cgi-bin/status.sh');
+                const data = await response.json();
+                
+                // Update status indicator
+                document.getElementById('status').className = 
+                    `status-led ${data.status === 'online' ? 'online' : 'offline'}`;
+                    
+                // Update retry information
+                if (data.desired_state === 'on' && data.status === 'offline') {
+                    document.getElementById('retry-info').textContent = 
+                        `Retrying... (${data.retry_count} attempts)`;
+                } else {
+                    document.getElementById('retry-info').textContent = '';
+                }
+            } catch (error) {
+                console.error('Status update failed:', error);
+            }
+        }
+    
+        async function wakeNAS() {
+            try {
+                const response = await fetch('/cgi-bin/wol.sh');
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    alert('Wake signal sent!');
+                } else {
+                    alert('Failed to send wake signal: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Wake request failed:', error);
+                alert('Failed to send wake signal');
+            }
+        }
+    
+        setInterval(updateStatus, 5000);
+        updateStatus();
+    </script>
+    </body>
+</html>
