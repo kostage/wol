@@ -1,2 +1,13 @@
 .aider*
 .env
+# Ignore Docker build artifacts
+.DS_Store
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+
+# Ignore local state files
+state.json
