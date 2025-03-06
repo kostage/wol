@@ -12,8 +12,19 @@ setup() {
     # Copy scripts to test location
     cp /var/www/cgi-bin/*.sh "$TEST_CGI_BIN/"
     cp /var/www/mock/* "$TEST_MOCK_DIR/"
-    cp /var/www/config.json "$TEST_WWW_DIR/"
-    cp /var/www/mock_config.json "$TEST_WWW_DIR/"
+    
+    # Initialize config.json with use_mock set to true
+    echo '{
+        "mac_address": "00:11:22:33:44:55",
+        "ip_address": "192.168.1.100",
+        "use_mock": true
+    }' > "$TEST_WWW_DIR/config.json"
+    
+    # Initialize mock_config.json with default values
+    echo '{
+        "mock_ping_result": "success",
+        "mock_etherwake_result": "success"
+    }' > "$TEST_WWW_DIR/mock_config.json"
     
     # Set PATH to include our mock directory
     export PATH="$TEST_MOCK_DIR:$PATH"

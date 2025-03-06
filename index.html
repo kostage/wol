@@ -33,14 +33,6 @@
                 // Update status indicator
                 document.getElementById('status').className = 
                     `status-led ${data.status === 'online' ? 'online' : 'offline'}`;
-                    
-                // Update retry information
-                if (data.desired_state === 'on' && data.status === 'offline') {
-                    document.getElementById('retry-info').textContent = 
-                        `Retrying... (${data.retry_count} attempts)`;
-                } else {
-                    document.getElementById('retry-info').textContent = '';
-                }
             } catch (error) {
                 console.error('Status update failed:', error);
             }
@@ -48,8 +40,16 @@
     
         async function wakeNAS() {
             try {
+                console.log("Sending WoL request...");
                 const response = await fetch('/cgi-bin/wol.sh');
-                const data = await response.json();
+                
+                // Read the response as text
+                const text = await response.text();
+                console.log("Raw response:", text);
+                
+                // Parse the text as JSON
+                const data = JSON.parse(text);
+                console.log("Parsed response:", data);
                 
                 if (data.status === 'success') {
                     alert('Wake signal sent!');
@@ -62,8 +62,9 @@
             }
         }
     
+        // Update status every 5 seconds
         setInterval(updateStatus, 5000);
-        updateStatus();
+        updateStatus(); // Initial status update
     </script>
-    </body>
+</body>
 </html>

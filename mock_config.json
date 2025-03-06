@@ -1,4 +1,4 @@
 {
-    "mock_etherwake_result": "success",
-    "mock_ping_result": "success"
+    "mock_etherwake_result": "fail",
+    "mock_ping_result": "fail"
 }

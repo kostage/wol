@@ -11,10 +11,7 @@ else
 fi
 
 # Read MAC address
-MAC=$(echo "$CONFIG" | grep -oP '"mac_address":\s*"\K[^"]+')
-
-# Update desired state
-echo '{"desired_state":"on","last_wake_attempt":'$(date +%s)',"retry_count":0}' > /var/www/state.json
+MAC=$(echo "$CONFIG" | jq -r '.mac_address')
 
 # Send WoL packet
 if $ETHERWAKE -i eth0 "$MAC" 2>/dev/null; then

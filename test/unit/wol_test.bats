@@ -3,7 +3,7 @@
 load 'test_helper'
 
 @test "wol.sh sends WoL packet successfully" {
-    # Setup mock config
+    # Update mock config to simulate successful WoL
     echo '{"mock_etherwake_result":"success"}' > "$TEST_WWW_DIR/mock_config.json"
     
     run "$TEST_CGI_BIN/wol.sh"
@@ -13,7 +13,7 @@ load 'test_helper'
 }
 
 @test "wol.sh handles WoL failure" {
-    # Setup mock config
+    # Update mock config to simulate failed WoL
     echo '{"mock_etherwake_result":"error"}' > "$TEST_WWW_DIR/mock_config.json"
     
     run "$TEST_CGI_BIN/wol.sh"
