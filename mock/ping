@@ -7,9 +7,7 @@ CONFIG=$(cat /var/www/mock_config.json)
 MOCK_RESULT=$(echo "$CONFIG" | jq -r '.mock_ping_result')
 
 if [ "$MOCK_RESULT" = "success" ]; then
-    echo "Mock: Host is reachable"
     exit 0
 else
-    echo "Mock: Host is unreachable" >&2
     exit 1
 fi

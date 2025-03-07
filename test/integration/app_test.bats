@@ -1,5 +1,9 @@
 #!/usr/bin/env bats
 
+# Load bats-support and bats-assert
+load '/usr/lib/bats-support/load'
+load '/usr/lib/bats-assert/load'
+
 setup() {
     # Start the application
     /start.sh &
@@ -14,18 +18,18 @@ teardown() {
 
 @test "web interface returns index.html" {
     run curl -s http://localhost:80/
-    [ "$status" -eq 0 ]
-    [[ "$output" == *"<title>NAS Control</title>"* ]]
+    assert_success
+    assert_output --partial "<title>NAS Control</title>"
 }
 
 @test "wol endpoint responds" {
-    run curl -s -X POST http://localhost:80/cgi-bin/wol.sh
-    [ "$status" -eq 0 ]
-    [[ "$output" == *"status"* ]]
+    run curl -s http://localhost:80/cgi-bin/wol.sh
+    assert_success
+    assert_output --partial '"status"'
 }
 
 @test "status endpoint responds" {
     run curl -s http://localhost:80/cgi-bin/status.sh
-    [ "$status" -eq 0 ]
-    [[ "$output" == *"status"* ]]
+    assert_success
+    assert_output --partial '"status"'
 }

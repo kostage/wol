@@ -28,3 +28,8 @@ To build the Docker image for testing and development:
 ```bash
 docker build -t nas-control .
 ```
+
+### 2. Run the Docker Image
+```bash
+docker run --rm -p 8080:80 --name nas-control nas-control
+```

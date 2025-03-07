@@ -13,9 +13,14 @@ RUN apk add --no-cache \
     shadow \
     bats \
     curl \
-    bash && \
+    bash \
+    git && \
     mkdir -p /var/www/localhost/htdocs /var/www/cgi-bin /var/www/mock /var/log/lighttpd && \
     chown -R appuser:appuser /var/www /var/log/lighttpd
+
+# Install bats-assert and bats-support
+RUN git clone https://github.com/bats-core/bats-support.git /usr/lib/bats-support && \
+    git clone https://github.com/bats-core/bats-assert.git /usr/lib/bats-assert
 
 # Copy test files
 COPY test /test

@@ -1,7 +1,8 @@
 #!/bin/sh
 
-# Determine whether to use real or mock commands
-CONFIG=$(cat /var/www/config.json)
+# Use test-specific config if available, otherwise fall back to default
+CONFIG_FILE="${TEST_WWW_DIR:-/var/www}/config.json"
+CONFIG=$(cat "$CONFIG_FILE")
 USE_MOCK=$(echo "$CONFIG" | jq -r '.use_mock')
 
 if [ "$USE_MOCK" = "true" ]; then
