@@ -29,7 +29,15 @@ To build the Docker image for testing and development:
 docker build -t nas-control .
 ```
 
-### 2. Run the Docker Image
+### 2. Test the Docker Image
 ```bash
-docker run --rm -p 8080:80 --name nas-control nas-control
+# run test
+docker run --rm nas-control /test/run_tests.sh
+# (optional deploy mocked version)
+docker run --rm -p 8080:80 --env USE_MOCK=true --name nas-control nas-control
+```
+
+### 3. Run the Docker Image
+```bash
+docker run --rm -p 8080:80 -v congfig_asb_dir/:/var/www/config/ --name nas-control nas-control
 ```

@@ -1,21 +1,12 @@
 #!/bin/sh
 
-# Use test-specific config if available, otherwise fall back to default
-CONFIG_FILE="${TEST_WWW_DIR:-/var/www}/config.json"
-CONFIG=$(cat "$CONFIG_FILE")
-USE_MOCK=$(echo "$CONFIG" | jq -r '.use_mock')
-
-if [ "$USE_MOCK" = "true" ]; then
-    ETHERWAKE="/var/www/mock/etherwake"
-else
-    ETHERWAKE="sudo /usr/sbin/etherwake"
-fi
-
-# Read MAC address
+# Read config
+CONFIG=`cat /var/www/config/config.json | envsubst`
 MAC=$(echo "$CONFIG" | jq -r '.mac_address')
+IF=$(echo "$CONFIG" | jq -r '.network_interface')
 
 # Send WoL packet
-if $ETHERWAKE -i eth0 "$MAC" 2>/dev/null; then
+if etherwake -i "$IF" "$MAC" 2>/dev/null; then
     echo "Content-type: application/json"
     echo ""
     echo '{"status":"success","message":"Wake signal sent"}'

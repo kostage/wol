@@ -1,20 +1,17 @@
 #!/bin/sh
 
-# Determine whether to use real or mock commands
-CONFIG=$(cat /var/www/config.json)
-USE_MOCK=$(echo "$CONFIG" | jq -r '.use_mock')
-
-if [ "$USE_MOCK" = "true" ]; then
-    PING="/var/www/mock/ping"
-else
-    PING="/bin/ping"
+# Prepare config
+APP_PATH="$PATH"
+if [ "$USE_MOCK" == "true" ]; then
+    APP_PATH="/var/www/mock:$APP_PATH"
 fi
 
-# Read config
-IP=$(echo "$CONFIG" | jq -r '.ip_address')
+# Patch the config file using envsubst
+export APP_PATH
+envsubst < /etc/lighttpd/lighttpd.conf > /tmp/lighttpd_patched.conf
 
-# Set permissions for lighttpd logs
+# Set permissions for logs
 chown appuser:appuser /var/log/lighttpd /var/log/lighttpd/*.log 2>/dev/null || true
 
-# Start lighttpd
-exec lighttpd -D -f /etc/lighttpd/lighttpd.conf
+# Start Lighttpd with the patched config
+exec lighttpd -D -f /tmp/lighttpd_patched.conf

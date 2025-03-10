@@ -9,6 +9,7 @@ RUN apk add --no-cache \
     lighttpd \
     iputils \
     jq \
+    envsubst \
     sudo \
     shadow \
     bats \
@@ -36,7 +37,7 @@ COPY wol.sh /var/www/cgi-bin/
 COPY status.sh /var/www/cgi-bin/
 COPY start.sh /
 COPY mock/* /var/www/mock/
-COPY config.json /var/www/
+COPY config.json /var/www/config/
 COPY mock_config.json /var/www/
 
 # Set permissions

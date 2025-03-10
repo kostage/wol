@@ -3,8 +3,8 @@
 echo "Mock ping called with arguments: $@" >> /var/www/mock/mock.log
 
 # Read mock config
-CONFIG=$(cat /var/www/mock_config.json)
-MOCK_RESULT=$(echo "$CONFIG" | jq -r '.mock_ping_result')
+MOCK_CONFIG=$(cat /var/www/mock_config.json)
+MOCK_RESULT=$(echo "$MOCK_CONFIG" | jq -r '.mock_ping_result')
 
 if [ "$MOCK_RESULT" = "success" ]; then
     exit 0

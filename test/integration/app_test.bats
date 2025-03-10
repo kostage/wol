@@ -6,7 +6,7 @@ load '/usr/lib/bats-assert/load'
 
 setup() {
     # Start the application
-    /start.sh &
+    USE_MOCK=true /start.sh &
     export APP_PID=$!
     sleep 1
 }
