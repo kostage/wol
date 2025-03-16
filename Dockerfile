@@ -1,5 +1,4 @@
-ARG SOURCE_IMAGE
-FROM ${SOURCE_IMAGE}
+FROM alpine:3.19
 
 # Create non-root user
 RUN adduser -D -u 1000 appuser && \
