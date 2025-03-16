@@ -102,7 +102,7 @@ jobs:
           push: true
           tags: ${{ needs.build.outputs.image_tag }}
           build-args: |
-            SOURCE_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${{ github.sha }}
+            SOURCE_IMAGE=${{ format('{0}/{1}:sha-{2}', env.REGISTRY, env.IMAGE_NAME, github.sha) }}
       - name: Sign the published Docker image
         if: startsWith(github.ref, 'refs/tags/')
         env:
