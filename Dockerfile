@@ -5,8 +5,9 @@ RUN adduser --disabled-password --uid 1000 appuser && \
     echo 'appuser ALL=(root) NOPASSWD: /usr/sbin/etherwake' >> /etc/sudoers
 
 # Install dependencies
-RUN apt-get update && \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -y --no-install-recommends \
+    -o Dpkg::Options::="--force-confold" \
     lighttpd \
     iputils-ping \
     jq \
