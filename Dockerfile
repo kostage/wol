@@ -10,7 +10,7 @@ RUN apt-get update && \
     lighttpd \
     iputils-ping \
     jq \
-    wakeonlan \
+    etherwake \
     sudo \
     bats \
     curl \
@@ -40,6 +40,7 @@ COPY wol.sh /var/www/cgi-bin/
 COPY status.sh /var/www/cgi-bin/
 COPY start.sh /
 COPY mock/* /var/www/mock/
+RUN chmod +x /var/www/mock/*
 COPY config.json /var/www/config/
 COPY mock_config.json /var/www/
 
@@ -57,6 +58,8 @@ RUN mkdir -p /var/log/lighttpd && \
     chown appuser:appuser /var/log/lighttpd
 
 EXPOSE 80
+
+RUN which etherwake && etherwake --version || echo "etherwake not found"
 
 USER appuser
 
