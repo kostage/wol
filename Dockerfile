@@ -1,21 +1,24 @@
-FROM alpine:3.19
+FROM debian:bookworm-slim
 
 # Create non-root user
-RUN adduser -D -u 1000 appuser && \
+RUN adduser --disabled-password --uid 1000 appuser && \
     echo 'appuser ALL=(root) NOPASSWD: /usr/sbin/etherwake' >> /etc/sudoers
 
 # Install dependencies
-RUN apk add --no-cache \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
     lighttpd \
-    iputils \
+    iputils-ping \
     jq \
-    envsubst \
+    wakeonlan \
     sudo \
-    shadow \
     bats \
     curl \
     bash \
-    git && \
+    git \
+    gettext-base && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
     mkdir -p /var/www/localhost/htdocs /var/www/cgi-bin /var/www/mock /var/log/lighttpd && \
     chown -R appuser:appuser /var/www /var/log/lighttpd
 
