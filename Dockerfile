@@ -2,12 +2,14 @@ FROM debian:bookworm-slim
 
 # Create non-root user
 RUN adduser --disabled-password --uid 1000 appuser && \
-    echo 'appuser ALL=(root) NOPASSWD: /usr/sbin/etherwake' >> /etc/sudoers
+    echo 'appuser ALL=(root) NOPASSWD: /usr/sbin/etherwake' >> /etc/sudoers && \
+    echo 'appuser ALL=(root) NOPASSWD: /var/www/mock/etherwake' >> /etc/sudoers
 
 # Install dependencies
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -y --no-install-recommends \
     -o Dpkg::Options::="--force-confold" \
+    ca-certificates \
     lighttpd \
     iputils-ping \
     jq \
@@ -21,6 +23,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     libcap2-bin \
     net-tools && \
     apt-get clean && \
+    update-ca-certificates --fresh && \
     setcap cap_net_raw+ep /bin/ping && \
     rm -rf /var/lib/apt/lists/* && \
     mkdir -p /var/www/localhost/htdocs /var/www/cgi-bin /var/www/mock /var/log/lighttpd && \

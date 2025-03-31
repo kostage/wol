@@ -16,7 +16,6 @@ This project provides a web interface to wake up a NAS device using Wake-on-LAN 
 ## Prerequisites
 - Docker (for building and testing)
 - OpenWrt router with SSH access
-- `etherwake` installed on the OpenWrt router (for WoL functionality)
 
 ---
 
@@ -41,3 +40,5 @@ docker run --rm -p 8080:80 --env USE_MOCK=true --name nas-control nas-control
 ```bash
 docker run --rm -p 8080:80 -v congfig_asb_dir/:/var/www/config/ --name nas-control nas-control
 ```
+
+### 4. Deploy on router
