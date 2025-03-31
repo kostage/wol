@@ -16,8 +16,11 @@ RUN apt-get update && \
     curl \
     bash \
     git \
-    gettext-base && \
+    gettext-base \
+    libcap2-bin \
+    net-tools && \
     apt-get clean && \
+    setcap cap_net_raw+ep /bin/ping && \
     rm -rf /var/lib/apt/lists/* && \
     mkdir -p /var/www/localhost/htdocs /var/www/cgi-bin /var/www/mock /var/log/lighttpd && \
     chown -R appuser:appuser /var/www /var/log/lighttpd
@@ -60,6 +63,7 @@ RUN mkdir -p /var/log/lighttpd && \
 EXPOSE 80
 
 RUN which etherwake && etherwake --version || echo "etherwake not found"
+RUN which ping && which jq
 
 USER appuser
 

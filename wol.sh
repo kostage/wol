@@ -6,7 +6,7 @@ MAC=$(echo "$CONFIG" | jq -r '.mac_address')
 IF=$(echo "$CONFIG" | jq -r '.network_interface')
 
 # Send WoL packet
-if etherwake -i "$IF" "$MAC" 2>/dev/null; then
+if sudo etherwake -i "$IF" "$MAC" 2>/dev/null; then
     echo "Content-type: application/json"
     echo ""
     echo '{"status":"success","message":"Wake signal sent"}'
