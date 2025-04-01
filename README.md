@@ -42,3 +42,124 @@ docker run --rm -p 8080:80 -v congfig_asb_dir/:/var/www/config/ --name nas-contr
 ```
 
 ### 4. Deploy on router
+# NAS Wake-on-LAN Web Interface
+
+A lightweight Docker-based web interface for waking NAS devices and checking their status.
+
+## Features
+- Wake-on-LAN functionality via web interface
+- Status monitoring through ICMP ping
+- Secure communication via Unix sockets
+- Alpine Linux based Docker image
+
+## Requirements
+- Docker installed on your system
+- OpenWrt router with:
+  - `etherwake` package
+  - `socat` package
+  - `coreutils-mkfifo` package
+  - `jq` package
+
+## OpenWrt Wrapper Setup
+
+1. **Install required packages** on your OpenWrt router:
+```bash
+opkg update
+opkg install etherwake socat coreutils-mkfifo jq
+```
+
+2. **Create socket directory**:
+```bash
+mkdir -p /var/run/wol-sockets
+chmod 777 /var/run/wol-sockets
+```
+
+3. **Deploy wrapper scripts** to `/usr/local/bin`:
+```bash
+# wol-wrapper.sh
+cat > /usr/local/bin/wol-wrapper.sh << 'EOF'
+#!/bin/sh
+SOCKET="/var/run/wol-sockets/wol.sock"
+rm -f $SOCKET
+mkfifo $SOCKET
+chmod 777 $SOCKET
+
+while true; do
+    if read line; do
+        /usr/sbin/etherwake -i $(echo "$line" | jq -r '.if') $(echo "$line" | jq -r '.mac')
+    done < $SOCKET
+done
+EOF
+
+# ping-wrapper.sh
+cat > /usr/local/bin/ping-wrapper.sh << 'EOF'
+#!/bin/sh
+SOCKET="/var/run/wol-sockets/ping.sock" 
+rm -f $SOCKET
+mkfifo $SOCKET
+chmod 777 $SOCKET
+
+while true; do
+    if read ip; do
+        ping -c 1 -W 1 "$ip" >/dev/null 2>&1
+        echo $? > $SOCKET
+    done < $SOCKET
+done
+EOF
+
+chmod +x /usr/local/bin/*.sh
+```
+
+4. **Create init.d service** (`/etc/init.d/wol-web`):
+```bash
+cat > /etc/init.d/wol-web << 'EOF'
+#!/bin/sh /etc/rc.common
+
+START=99
+USE_PROCD=1
+
+start_service() {
+    procd_open_instance
+    procd_set_param command /bin/sh -c "/usr/local/bin/wol-wrapper.sh & /usr/local/bin/ping-wrapper.sh"
+    procd_set_param respawn
+    procd_close_instance
+}
+EOF
+
+chmod +x /etc/init.d/wol-web
+/etc/init.d/wol-web enable
+/etc/init.d/wol-web start
+```
+
+## Docker Deployment
+
+1. **Build the image**:
+```bash
+docker build -t wol-web .
+```
+
+2. **Run the container**:
+```bash
+docker run -d \
+  --name wol-web \
+  -p 80:80 \
+  -v /var/run/wol-sockets:/var/run/wol-sockets \
+  -v /path/to/config.json:/var/www/config/config.json \
+  wol-web
+```
+
+## Configuration
+Edit `config.json` with your NAS details:
+```json
+{
+    "mac_address": "11:22:33:44:55:66",
+    "ip_address": "192.168.1.100",
+    "network_interface": "br-lan"
+}
+```
+
+## Usage
+Access the web interface at `http://your-router-ip:80`
+
+- The status indicator will automatically update every 5 seconds
+- Click "Wake NAS" to send a Wake-on-LAN packet
