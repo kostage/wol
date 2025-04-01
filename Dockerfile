@@ -47,6 +47,7 @@ COPY wol.sh /var/www/cgi-bin/
 COPY status.sh /var/www/cgi-bin/
 COPY start.sh /
 COPY mock/* /var/www/mock/
+COPY wol-wrapper.sh ping-wrapper.sh /var/www/mock/
 RUN chmod +x /var/www/mock/*
 COPY config.json /var/www/config/
 COPY mock_config.json /var/www/
@@ -66,8 +67,13 @@ RUN mkdir -p /var/log/lighttpd && \
 
 EXPOSE 80
 
+RUN apt-get update && \
+    apt-get install -y socat && \
+    mkdir -p /var/run/wol-sockets && \
+    chown appuser:appuser /var/run/wol-sockets
+
 RUN which etherwake && etherwake --version || echo "etherwake not found"
-RUN which ping && which jq
+RUN which ping && which jq && which socat
 
 USER appuser
 

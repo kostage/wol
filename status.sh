@@ -4,8 +4,8 @@
 CONFIG=`cat /var/www/config/config.json | envsubst`
 IP=$(echo "$CONFIG" | jq -r '.ip_address')
 
-# Check current status
-if ping -c 1 -W 1 "$IP" >/dev/null 2>&1; then
+# Check via socket
+if echo "$IP" | socat UNIX-CONNECT:/var/run/wol-sockets/ping.sock -; then
     STATUS="online"
 else
     STATUS="offline"
