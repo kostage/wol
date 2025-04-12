@@ -1,17 +1,19 @@
 #!/bin/sh
 
 # Read config
-CONFIG=`cat /var/www/config/config.json | envsubst`
+CONFIG=$(cat /var/www/config/config.json)
 IP=$(echo "$CONFIG" | jq -r '.ip_address')
 
-# Check via socket
-if echo "$IP" | socat UNIX-CONNECT:/var/run/wol-sockets/ping.sock -; then
+# Send IP to socket and capture the result
+RESULT=$(echo "$IP" | socat -t 2 UNIX-CONNECT:/var/run/wol_sockets/ping.sock - 2>/dev/null)
+
+if [ "$RESULT" = "0" ]; then
     STATUS="online"
 else
     STATUS="offline"
 fi
 
-# Return status
+# Return JSON response
 echo "Content-type: application/json"
 echo ""
-echo '{"status":"'$STATUS'"}'
+echo '{"status":"'"$STATUS"'"}'
