@@ -7,7 +7,15 @@ ROUTER_SSH_HOST="glinet"
 REMOTE_APP_DIR="/root/wol_app"
 LOCAL_CONFIG="config.json"
 DOCKER_IMAGE_NAME="ghcr.io/kostage/wol"
-DOCKER_IMAGE_TAG="v0.0.5"
+DOCKER_IMAGE_TAG="v0.0.7"
+
+ssh "$ROUTER_SSH_HOST" /bin/sh << 'EOF'
+APP_DIR="/root/wol_app"
+SOCKET_DIR="$APP_DIR/wol_sockets"
+mkdir -p "$SOCKET_DIR"
+chmod 777 "$SOCKET_DIR"
+mkdir -p "$APP_DIR"
+EOF
 
 echo "📤 Copying files to router..."
 scp -O wrappers/start_wrappers.sh wrappers/wol_handler.sh wrappers/ping_handler.sh "$LOCAL_CONFIG" "$ROUTER_SSH_HOST:$REMOTE_APP_DIR/"
@@ -23,9 +31,6 @@ opkg update
 opkg install etherwake socat jq
 
 # Create socket directory
-mkdir -p "$SOCKET_DIR"
-chmod 777 "$SOCKET_DIR"
-mkdir -p "$APP_DIR"
 chmod +x "$APP_DIR"/*.sh
 
 # Create and enable wrapper service
@@ -46,7 +51,7 @@ chmod +x /etc/init.d/wol_sockets
 /etc/init.d/wol_sockets start
 
 # Pull Docker image
-docker pull ghcr.io/kostage/wol:v0.0.5
+docker pull ghcr.io/kostage/wol:v0.0.7
 
 # Create and enable Docker service
 cat > /etc/init.d/wol_web << 'EOL'
@@ -57,10 +62,10 @@ start_service() {
     procd_open_instance
     procd_set_param command docker run --rm \
         --name wol_web \
-        -p 7777:80 \
+        --network host \
         -v /root/wol_app/wol_sockets:/var/run/wol_sockets \
         -v /root/wol_app/config.json:/var/www/config/config.json \
-        ghcr.io/kostage/wol:v0.0.5
+        ghcr.io/kostage/wol:v0.0.7
     procd_set_param respawn
     procd_close_instance
 }

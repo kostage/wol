@@ -23,7 +23,7 @@ COPY index.html /var/www/localhost/htdocs/
 COPY wol.sh status.sh /var/www/cgi-bin/
 COPY start.sh /
 COPY config.json /var/www/config/
-COPY lighttpd.conf /etc/lighttpd/
+COPY lighttpd.conf.tpl /etc/lighttpd/
 
 # Set permissions
 RUN chmod +x /var/www/cgi-bin/*.sh && \

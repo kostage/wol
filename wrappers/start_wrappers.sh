@@ -16,12 +16,12 @@ rm -f "$SOCKET_WOL" "$SOCKET_PING"
 mkdir -p "$SOCKET_DIR"
 
 # Start WOL listener
-socat UNIX-LISTEN:$SOCKET_WOL,fork EXEC:$APP_DIR/wol_handler.sh &
+socat UNIX-LISTEN:$SOCKET_WOL,fork,,mode=777 EXEC:$APP_DIR/wol_handler.sh &
 echo $! > "$PID_WOL"
 echo "WOL wrapper started on $SOCKET_WOL"
 
 # Start PING listener
-socat UNIX-LISTEN:$SOCKET_PING,fork EXEC:$APP_DIR/ping_handler.sh &
+socat UNIX-LISTEN:$SOCKET_PING,fork,,mode=777 EXEC:$APP_DIR/ping_handler.sh &
 echo $! > "$PID_PING"
 echo "Ping wrapper started on $SOCKET_PING"
 
