@@ -5,7 +5,7 @@ server.modules = (
 )
 
 server.document-root = "/var/www/localhost/htdocs"
-server.port = 80
+server.port = ${PORT}
 
 # CGI configuration
 alias.url += ("/cgi-bin/" => "/var/www/cgi-bin/")
